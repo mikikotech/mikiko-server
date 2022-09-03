@@ -19,73 +19,85 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.get("/getAllSchedule/:id", async (req, res) => {
-  const respone = await fire
-    .firestore()
-    .collection("devices")
-    .doc(req.params.id)
-    .get();
+  try {
+    const respone = await fire
+      .firestore()
+      .collection("devices")
+      .doc(req.params.id)
+      .get();
 
-  const data =
-    respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
-      .values;
+    const data =
+      respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
+        .values;
 
-  var schedule = [];
+    var schedule = [];
 
-  data.map((res) => {
-    schedule.push({
-      id: res.mapValue.fields.id.stringValue,
-      cron: res.mapValue.fields.cron.stringValue,
+    data.map((res) => {
+      schedule.push({
+        id: res.mapValue.fields.id.stringValue,
+        cron: res.mapValue.fields.cron.stringValue,
+      });
     });
-  });
 
-  res.send(schedule);
+    res.send(schedule);
+  } catch (error) {
+    res.status(400).send("error");
+  }
 });
 
 app.get("/getLastSchedule/:id", async (req, res) => {
-  const respone = await fire
-    .firestore()
-    .collection("devices")
-    .doc(req.params.id)
-    .get();
+  try {
+    const respone = await fire
+      .firestore()
+      .collection("devices")
+      .doc(req.params.id)
+      .get();
 
-  const data =
-    respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
-      .values;
+    const data =
+      respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
+        .values;
 
-  var schedule = [
-    {
-      id: data[data.length - 1].mapValue.fields.id.stringValue,
-      cron: data[data.length - 1].mapValue.fields.data.stringValue,
-    },
-  ];
+    var schedule = [
+      {
+        id: data[data.length - 1].mapValue.fields.id.stringValue,
+        cron: data[data.length - 1].mapValue.fields.data.stringValue,
+      },
+    ];
 
-  res.send(schedule);
+    res.send(schedule);
+  } catch (error) {
+    res.status(400).send("error");
+  }
 });
 
 app.get("/getEditSchedule/:id", async (req, res) => {
-  const respone = await fire
-    .firestore()
-    .collection("devices")
-    .doc(req.params.id)
-    .get();
+  try {
+    const respone = await fire
+      .firestore()
+      .collection("devices")
+      .doc(req.params.id)
+      .get();
 
-  const data =
-    respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
-      .values;
+    const data =
+      respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
+        .values;
 
-  var schedule = data.filter((res) => {
-    // console.log(res.mapValue.fields.id.stringValue);
-    return res.mapValue.fields.id.stringValue == req.body.id;
-  });
+    var schedule = data.filter((res) => {
+      // console.log(res.mapValue.fields.id.stringValue);
+      return res.mapValue.fields.id.stringValue == req.body.id;
+    });
 
-  schedule = [
-    {
-      id: schedule[0].mapValue.fields.id.stringValue,
-      cron: schedule[0].mapValue.fields.data.stringValue,
-    },
-  ];
+    schedule = [
+      {
+        id: schedule[0].mapValue.fields.id.stringValue,
+        cron: schedule[0].mapValue.fields.data.stringValue,
+      },
+    ];
 
-  res.send(schedule);
+    res.send(schedule);
+  } catch (error) {
+    res.status(400).send("error");
+  }
 });
 
 app.post("/removeSchedule/:id", async (req, res) => {
@@ -110,35 +122,39 @@ app.post("/removeSchedule/:id", async (req, res) => {
 });
 
 app.post("/message", async (req, res) => {
-  console.log("notif body = ", req.body);
-  var data = await fire
-    .firestore()
-    .collection("users")
-    .doc(req.body.email)
-    .get();
+  // console.log("notif body = ", req.body);
+  try {
+    var data = await fire
+      .firestore()
+      .collection("users")
+      .doc(req.body.email)
+      .get();
 
-  const fcm_token =
-    data._delegate._document.data.value.mapValue.fields.fcm_token.stringValue;
+    const fcm_token =
+      data._delegate._document.data.value.mapValue.fields.fcm_token.stringValue;
 
-  var message = {
-    //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-    to: fcm_token,
-    // collapse_key: 'your_collapse_key',
+    var message = {
+      //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+      to: fcm_token,
+      // collapse_key: 'your_collapse_key',
 
-    notification: {
-      title: "schedule notification",
-      body: `Switch ${req.body.switch} ${req.body.state}`,
-    },
-  };
+      notification: {
+        title: "schedule notification",
+        body: `Switch ${req.body.switch} ${req.body.state}`,
+      },
+    };
 
-  fcm.send(message, function (err, response) {
-    if (err) {
-      console.log("Something has gone wrong!");
-    } else {
-      console.log("Successfully sent with response: ", response);
-      res.send("message success to send");
-    }
-  });
+    fcm.send(message, function (err, response) {
+      if (err) {
+        console.log("Something has gone wrong!");
+      } else {
+        console.log("Successfully sent with response: ", response);
+        res.send("message success to send");
+      }
+    });
+  } catch (error) {
+    res.status(400).send("error");
+  }
 });
 
 app.post("/ota", (req, res) => {
