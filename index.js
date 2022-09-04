@@ -17,5 +17,7 @@ app.use("/schedule", scheduleRoute);
 app.use("/notif", notifRoute);
 app.use("/sensor", sensorRoute);
 
+app.get("/", (req, res) => res.send("welcome to mikiko"));
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log("port ", port));
