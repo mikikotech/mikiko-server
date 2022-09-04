@@ -12,16 +12,16 @@ route.get("/getall/:id", async (req, res) => {
       .doc(req.params.id)
       .get();
 
-    const data =
+    const responeData =
       respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
         .values;
 
     var schedule = [];
 
-    data.map((res) => {
+    responeData.map((res) => {
       schedule.push({
         id: res.mapValue.fields.id.stringValue,
-        cron: res.mapValue.fields.cron.stringValue,
+        data: res.mapValue.fields.cron.stringValue,
       });
     });
 
@@ -39,14 +39,15 @@ route.get("/getlast/:id", async (req, res) => {
       .doc(req.params.id)
       .get();
 
-    const data =
+    const ResponeData =
       respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
         .values;
 
     var schedule = [
       {
-        id: data[data.length - 1].mapValue.fields.id.stringValue,
-        cron: data[data.length - 1].mapValue.fields.data.stringValue,
+        id: ResponeData[ResponeData.length - 1].mapValue.fields.id.stringValue,
+        data: ResponeData[ResponeData.length - 1].mapValue.fields.data
+          .stringValue,
       },
     ];
 
@@ -75,11 +76,11 @@ route.get("/getedit/:id", async (req, res) => {
       .doc(req.params.id)
       .get();
 
-    const data =
+    const responeData =
       respone._delegate._document.data.value.mapValue.fields.schedule.arrayValue
         .values;
 
-    var schedule = data.filter((res) => {
+    var schedule = responeData.filter((res) => {
       // console.log(res.mapValue.fields.id.stringValue);
       return res.mapValue.fields.id.stringValue == req.body.id;
     });
@@ -87,7 +88,7 @@ route.get("/getedit/:id", async (req, res) => {
     schedule = [
       {
         id: schedule[0].mapValue.fields.id.stringValue,
-        cron: schedule[0].mapValue.fields.data.stringValue,
+        data: schedule[0].mapValue.fields.data.stringValue,
       },
     ];
 
@@ -108,7 +109,7 @@ route.post("/remove/:id", async (req, res) => {
       .update({
         schedule: firebase.firestore.FieldValue.arrayRemove({
           id: req.body.id,
-          data: req.body.cron,
+          data: req.body.data,
         }),
       });
 
