@@ -11,12 +11,6 @@ var fcm = new FCM(serverKey);
 route.post("/:id", async (req, res) => {
   console.log("notif body = ", req.body);
   try {
-    var data = await fire
-      .firestore()
-      .collection("users")
-      .doc(req.body.email)
-      .get();
-
     var deviceData = await fire
       .firestore()
       .collection("devices")
@@ -26,9 +20,16 @@ route.post("/:id", async (req, res) => {
     const responeData =
       deviceData._delegate._document.data.value.mapValue.fields;
 
+    var data = await fire
+      .firestore()
+      .collection("users")
+      .doc(responeData.devOwner.stringValue)
+      .get();
+
     const fcm_token =
       data._delegate._document.data.value.mapValue.fields.fcm_token.stringValue;
 
+    // res.send(fcm_token);
     var message = {
       //this may vary according to the message type (single recipient, multicast, topic, et cetera)
       to: fcm_token,
