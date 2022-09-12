@@ -37,6 +37,7 @@ route.post("/add/:id", async (req, res) => {
         temp: req.body.temp,
         humi: req.body.humi,
         soil: req.body.soil,
+        time: req.body.time,
       })
       .then(() => {
         res.send("data update");
