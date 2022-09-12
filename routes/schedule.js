@@ -25,6 +25,8 @@ route.get("/getall/:id", async (req, res) => {
       });
     });
 
+    console.log(schedule);
+
     res.send(schedule);
   } catch (error) {
     res.status(400).send("error");

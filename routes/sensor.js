@@ -6,10 +6,10 @@ const route = app.Router();
 
 route.post("/set/:id", async (req, res) => {
   // console.log(req.body);
+
   await fire
     .database()
-    .ref(`${req.params.id}/Sensor`)
-    .push()
+    .ref(`${req.params.id}/data`)
     .set({
       ph: req.body.ph,
       temp: req.body.temp,
@@ -17,7 +17,7 @@ route.post("/set/:id", async (req, res) => {
       soil: req.body.soil,
     })
     .then(() => {
-      res.send("data update");
+      res.send("data set");
     });
 });
 
